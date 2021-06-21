@@ -176,9 +176,10 @@ static void time_bench(const std::string &bench_name, const BenchmarkConfig &con
 {
     double aggregated_wall_time = 0;
     double aggregated_exec_time = 0;
+    const size_t slow_rank_internal_iterations = config.base_internal_iterations * config.imbalance_multiplier;
     const size_t internal_iterations = (rank < config.slow_rank_count)
-                                     ? config.imbalance_multiplier
-                                     : 1;
+                                     ? slow_rank_internal_iterations
+                                     : config.base_internal_iterations;
     uint64_t region_id = 0;
     const double ops_per_byte = get_compute_intensity(fmas_per_load, sizeof(Precision));
     std::ostringstream region_name_oss;
@@ -203,8 +204,10 @@ static void time_bench(const std::string &bench_name, const BenchmarkConfig &con
         if (geopm_error) {
             throw_geopm_error("Entering region " + bench_name, geopm_error);
         }
+        geopm_tprof_init(internal_iterations);
         for (size_t j = 0; j < internal_iterations; ++j) {
             bench((Precision *)data.get(), array_length_per_rank);
+            geopm_tprof_post();
         }
 
         // Ensure that we wait for any imbalance.
@@ -221,8 +224,8 @@ static void time_bench(const std::string &bench_name, const BenchmarkConfig &con
 
     const double total_iterations =
         config.iteration_count *               // external loops
-        (rank_count - config.slow_rank_count + // regular rank internal loops
-         config.slow_rank_count * config.imbalance_multiplier); // slow rank internal loops
+        ((rank_count - config.slow_rank_count) * config.base_internal_iterations + // regular rank internal loops
+         config.slow_rank_count * slow_rank_internal_iterations); // slow rank internal loops
     const double bytes_loaded = array_length_per_rank * sizeof(Precision) * total_iterations;
     const double total_ops = ops_per_byte * bytes_loaded;
     logger.stream(0)

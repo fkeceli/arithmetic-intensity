@@ -57,7 +57,13 @@ int main(int argc, char **argv)
 {
     CLI::App app{"Run a benchmark with configurable arithmetic intensity and MPI imbalance"};
 
-    size_t imbalance_multiplier = 1;
+    size_t base_internal_iterations = 1;
+    app.add_option("--base-internal-iterations", base_internal_iterations,
+                   "How many iterations to perform in the inner loop, for the "
+                   "fast set of ranks (all ranks if there is no imbalance).",
+                   true);
+
+    double imbalance_multiplier = 1;
     app.add_option("--slowdown", imbalance_multiplier,
                    "When imbalance is present, this specifies the amount of work for slow "
                    "ranks to perform, as a factor of the amount of work the fast ranks "
@@ -151,7 +157,7 @@ int main(int argc, char **argv)
         }
     }
 
-    run_benchmarks({ slow_rank_count, imbalance_multiplier, floats,
+    run_benchmarks({ slow_rank_count, base_internal_iterations, imbalance_multiplier, floats,
                      verbosity->count(), *is_single_precision, iteration_count,
                      enabled_benchmarks, start_time });
 
