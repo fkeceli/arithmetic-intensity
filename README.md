@@ -14,7 +14,7 @@ run with the vector instruction types SSE, AVX2 and AVX512 respectively.
 ## Help
     $ ./bench_? -h
     Run a benchmark with configurable arithmetic intensity and MPI imbalance
-    Usage: ./main [OPTIONS]
+    Usage: ./bench_? [OPTIONS]
     
     Options:
       -h,--help                   Print this help message and exit
