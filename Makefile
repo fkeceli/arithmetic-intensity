@@ -49,8 +49,13 @@ GEOPM_LIB_DIR = ${HOME}/build/geopm/lib
 GEOPM_INC_DIR = ${HOME}/build/geopm/include
 
 CXXFLAGS = -std=c++11 -g -O2 -xHost
-LDLIBS += -L$(GEOPM_LIB_DIR) -lgeopm
-CPPFLAGS += -I$(GEOPM_INC_DIR)
+ifndef NOGEOPM
+    LDLIBS += -L$(GEOPM_LIB_DIR) -lgeopm
+    CPPFLAGS += -I$(GEOPM_INC_DIR)
+    GEOPM_H_DEPENDENCY = geopm_empty.h
+else
+    CXXFLAGS += -DNOGEOPM
+endif
 CXX = mpicxx
 LINK.o = $(LINK.cc)
 LDFLAGS = -Wl,-z,noexecstack
@@ -71,7 +76,7 @@ bench_sse: main.o bench.o sumsq_sse.o
 main.o: main.cpp bench.hpp
 	$(COMPILE.cc) $< $(OUTPUT_OPTION)
 
-bench.o: bench.cpp bench.hpp
+bench.o: bench.cpp bench.hpp $(GEOPM_H_DEPENDENCY)
 	$(COMPILE.cc) $< $(OUTPUT_OPTION)
 
 sumsq_avx512.o: sumsq_avx512.asm

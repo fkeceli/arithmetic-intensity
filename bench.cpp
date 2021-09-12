@@ -62,8 +62,13 @@
 #include <sstream>
 #include <thread>
 #include <vector>
+
+#ifdef NOGEOPM
+#include "geopm_empty.h"
+#else
 #include "geopm.h"
 #include "geopm_error.h"
+#endif
 
 extern "C" void sumsq_0(const double *data, size_t length);
 extern "C" void sumsq_1(const double *data, size_t length);

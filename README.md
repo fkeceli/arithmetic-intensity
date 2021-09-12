@@ -2,13 +2,19 @@ This is a synthetic benchmark that runs at varied levels of arithmetic
 intensity.
 
 # Building
-    Run `make` to build the program, `main`.
+    Run `make` to build the program.
+
+    Run `make NOGEOPM=1` to build the program with no GEOPM dependencies.
 
 # Running
+
+The Makefile will generate 3 executables: bench_sse, bench_avx2, bench_avx512, which
+run with the vector instruction types SSE, AVX2 and AVX512 respectively.
+
 ## Help
-    $ ./main -h
+    $ ./bench_? -h
     Run a benchmark with configurable arithmetic intensity and MPI imbalance
-    Usage: ./main [OPTIONS]
+    Usage: ./bench_? [OPTIONS]
     
     Options:
       -h,--help                   Print this help message and exit
@@ -24,6 +30,10 @@ intensity.
 ## Execution
 The program is an MPI app. It uses as many ranks as are available.
 
-For example, use the following command to launch 44 ranks.
+For example, use the following command to launch 44 ranks with AVX512 instructions.
 
-    geopmlaunch srun -N 1 -n 44 ./main
+    geopmlaunch srun -N 1 -n 44 ./bench_avx512
+
+If compiled with NOGEOPM option, use the following command to do the same as above.
+
+    srun -N 1 -n 44 ./bench_avx512
