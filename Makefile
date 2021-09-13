@@ -90,4 +90,4 @@ sumsq_sse.o: sumsq_sse.asm
 
 .PHONY: clean
 clean:
-	rm -f sumsq_avx512.o sumsq_avx2.o sumsq_sse.o main.o bench.o main
+	rm -f sumsq_avx512.o sumsq_avx2.o sumsq_sse.o main.o bench.o bench_sse bench_avx2 bench_avx512
